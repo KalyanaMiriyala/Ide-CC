@@ -59,6 +59,7 @@ with open(sys.argv[2], 'wt') as tweetsF: #Open file to write tweets and time sta
                         itemTag = iterHash.upper() #convert hash tag to upper case
                         aList.append(itemTag)
                         aList.append(tweetTime)
+                        aList.append(len(hashTags) - 1)
                         nodeTuple = tuple(aList)
                         aList.clear()
                         #Add hash tag to List along with time stamp
@@ -73,11 +74,11 @@ with open(sys.argv[2], 'wt') as tweetsF: #Open file to write tweets and time sta
                 #Remove the tweets that have fallen off the window, adjust the Node degree and compute average
                 if (timeDiff.seconds >= 60):
                     for iter in range(len(prevMinTagNodes)):
-                        if (tweetTime - prevMinTagNodes[0][1]).seconds >= 60:
-                            if tagNodes[prevMinTagNodes[0][0]] == 1: #Drop the Hashtag with one degree as it has fallen off the window
+                        tDiff = tweetTime - prevMinTagNodes[0][1]
+                        if (tDiff.seconds) > 60:
+                            tagNodes[prevMinTagNodes[0][0]] -= prevMinTagNodes[0][2] #Decrement the degree for hash tag that has fallen off
+                            if tagNodes[prevMinTagNodes[0][0]] == 0: #Drop the Hashtag with one degree as it has fallen off the window
                                 del tagNodes[prevMinTagNodes[0][0]]
-                            else:
-                                tagNodes[prevMinTagNodes[0][0]] -= 1 #Decrement the degree for hash tag that has fallen off
                             del prevMinTagNodes[0]
                         else:
                             timerStart = prevMinTagNodes[0][1] #Move the Start time to shift the window
